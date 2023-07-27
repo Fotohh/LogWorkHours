@@ -45,7 +45,9 @@ public class Main{
             public void windowClosing(WindowEvent e) {
                 try {
                     if(profile != null)
-                        saveFile.save(profile);
+                        saveFile.saveAndExit(profile);
+                    Runtime.getRuntime().freeMemory();
+                    Runtime.getRuntime().exit(0);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }

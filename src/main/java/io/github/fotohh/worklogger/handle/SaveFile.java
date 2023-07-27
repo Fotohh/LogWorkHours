@@ -38,7 +38,7 @@ public class SaveFile {
 
     }
 
-    public void save(WorkProfile workProfile) throws IOException {
+    public void saveAndExit(WorkProfile workProfile) throws IOException {
         Scanner scanner = new Scanner(file);
         StringBuilder input = new StringBuilder();
         while (scanner.hasNext()) //while line != null
