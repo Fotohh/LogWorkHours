@@ -26,9 +26,9 @@ public class SaveFile {
 
         String newData = String.format("""
                 {
-                username = %s
-                password = %s
-                timestamp = %d
+                username=%s
+                password=%s
+                timestamp=%d
                 }
                 """, username, password, workHours);
 
@@ -39,39 +39,26 @@ public class SaveFile {
     }
 
     public void save(WorkProfile workProfile) throws IOException {
-        BufferedReader fileReader = new BufferedReader(new FileReader(file));
-        String line;
+        Scanner scanner = new Scanner(file);
         StringBuilder input = new StringBuilder();
-        while ((line = fileReader.readLine()) != null) //while line != null
+        while (scanner.hasNext()) //while line != null
         {
+            String line = scanner.nextLine();
             if (line.contains("{")) {
                 input.append(line).append("\n");
-                String line1;
-                while ((line1 = fileReader.readLine()) != null) {
-                    if (line1.contains("username") && line1.contains(workProfile.getUsername())) {
-                        String username = line1.replace("username = ", "");
-                        if (!(workProfile.getPassword().equalsIgnoreCase(username))) {
-                            line1 = "password = " + workProfile.getPassword();
-                            input.append(line1).append("\n");
-                        }
-                    }
-                    if (line1.contains("password")) {
-                        String password = line1.replace("password = ", "");
-                        if (!(workProfile.getPassword().equalsIgnoreCase(password))) {
-                            line1 = "username = " + workProfile.getPassword();
-                            input.append(line1).append("\n");
-                        }
-                    } else if (line1.contains("timestamp")) {
-                        String timestamp = line1.replace("timestamp =", "");
-                        if (!(String.valueOf(workProfile.getWorkHours()).equalsIgnoreCase(timestamp))) {
-                            line1 = "timestamp = " + workProfile.getWorkHours();
-                            input.append(line1).append("\n");
-                        }
-                    }else if(line1.contains("}")){
-                        input.append(line1).append("\n");
-                        break;
-                    }
-
+                line = scanner.nextLine();
+                if (line.contains("username") && line.contains(workProfile.getUsername())) {
+                    Saver.save(line, "username", workProfile.getUsername(), input);
+                    line = scanner.nextLine();
+                } else if (line.contains("password")) {
+                    Saver.save(line, "password", workProfile.getPassword(), input);
+                    line = scanner.nextLine();
+                } else if (line.contains("timestamp")) {
+                    Saver.save(line, "timestamp", String.valueOf(workProfile.getWorkHours()), input);
+                    line = scanner.nextLine();
+                } else if (line.contains("}")) {
+                    input.append(line).append('\n');
+                    line = scanner.nextLine();
                 }
             }
             input.append(line).append('\n'); //write orignal data to line with \n = new line
@@ -80,7 +67,7 @@ public class SaveFile {
 
         FileOutputStream out = new FileOutputStream(file);
         out.write(input.toString().getBytes());
-        fileReader.close();
+        scanner.close();
         out.close();
     }
 
@@ -89,11 +76,11 @@ public class SaveFile {
         while (scanner.hasNext()){
             String line = scanner.nextLine();
             if(line.contains("{")){
-                String l1 = scanner.nextLine().replace("username = ", "");
+                String l1 = scanner.nextLine().replace("username=", "");
                 if(!(l1.equalsIgnoreCase(username))) continue;
-                String l2 = scanner.nextLine().replace("password = ", "");
+                String l2 = scanner.nextLine().replace("password=", "");
                 if(!(l2.equalsIgnoreCase(password))) continue;
-                long l3 = Long.parseLong(scanner.nextLine().replace("timestamp = ", ""));
+                long l3 = Long.parseLong(scanner.nextLine().replace("timestamp=", ""));
                 return new WorkProfile(username,password,l3);
             }
         }
